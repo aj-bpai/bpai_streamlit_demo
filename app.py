@@ -443,25 +443,25 @@ if process_button and can_submit:
             st.video(output_video_url)
             st.markdown(f"[⬇️ Download Processed Video]({output_video_url})")
         
-        # Display metrics
-        st.markdown("### 📈 Metrics")
+        # # Display metrics
+        # st.markdown("### 📈 Metrics")
         
-        # Create a copy of data without the video URL for metrics display
-        metrics = {k: v for k, v in data.items() if k != "output_video_url"}
+        # # Create a copy of data without the video URL for metrics display
+        # metrics = {k: v for k, v in data.items() if k != "output_video_url"}
         
-        if metrics:
-            # Display metrics in columns
-            metric_cols = st.columns(min(len(metrics), 3))
-            for idx, (key, value) in enumerate(metrics.items()):
-                with metric_cols[idx % 3]:
-                    st.metric(
-                        label=key.replace("_", " ").title(),
-                        value=value
-                    )
+        # if metrics:
+        #     # Display metrics in columns
+        #     metric_cols = st.columns(min(len(metrics), 3))
+        #     for idx, (key, value) in enumerate(metrics.items()):
+        #         with metric_cols[idx % 3]:
+        #             st.metric(
+        #                 label=key.replace("_", " ").title(),
+        #                 value=value
+        #             )
         
-        # Display full JSON response
-        with st.expander("🔍 View Full API Response"):
-            st.json(data)
+        # # Display full JSON response
+        # with st.expander("🔍 View Full API Response"):
+        #     st.json(data)
     
     else:
         st.markdown('<div class="error-box">', unsafe_allow_html=True)
