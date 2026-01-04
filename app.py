@@ -21,6 +21,7 @@ aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
 aws_region = os.getenv('AWS_REGION')
 s3_bucket_name = os.getenv('S3_BUCKET_NAME')
 
+api_url = 'https://8000-dep-01ke3cnrrcq3kfchs64h1gxvx8-d.cloudspaces.litng.ai/api/v1/predict'
 api_key = None
 
 video_folder = 'input_videos'
@@ -77,23 +78,23 @@ st.markdown('<h1 class="main-header">🥇 BrandPulse AI</h1>', unsafe_allow_html
 st.markdown("---")
 
 # API and S3 Configuration Section
-with st.sidebar:
-    st.header("⚙️ Configuration")
+# with st.sidebar:
+#     st.header("⚙️ Configuration")
     
-    # API Settings
-    st.subheader("API Settings")
-    api_url = st.text_input(
-        "API Endpoint URL",
-        value=os.getenv('API_ENDPOINT', 'http://localhost:8000/predict'),
-        placeholder="http://localhost:8000/predict",
-        help="Enter the URL of your video processing API endpoint"
-    )
+#     # API Settings
+#     st.subheader("API Settings")
+#     api_url = st.text_input(
+#         "API Endpoint URL",
+#         value=os.getenv('API_ENDPOINT', 'http://localhost:8000/predict'),
+#         placeholder="http://localhost:8000/predict",
+#         help="Enter the URL of your video processing API endpoint"
+#     )
     
-    st.markdown("---")
-    st.markdown("### About")
-    st.info(
-        "BrandPulse AI 2025. Confidential. All rights reserved."
-    )
+#     st.markdown("---")
+#     st.markdown("### About")
+#     st.info(
+#         "BrandPulse AI 2025. Confidential. All rights reserved."
+#     )
 
 
 def upload_files_to_s3(
@@ -122,7 +123,7 @@ def upload_files_to_s3(
         
         # Upload video
         if video_file:
-            with st.spinner("📤 Uploading video..."):
+            # with st.spinner("📤 Uploading video..."):
                 # Save video to temporary file
                 with tempfile.NamedTemporaryFile(delete=False, suffix='.mp4') as tmp_video:
                     tmp_video.write(video_file.read())
@@ -135,14 +136,14 @@ def upload_files_to_s3(
                         expiration=url_expiration
                     )
                     results['video_url'] = video_url
-                    st.success(f"✓ Video uploaded successfully")
+                    # st.success(f"✓ Video uploaded successfully")
                 finally:
                     # Clean up temp file
                     Path(tmp_video_path).unlink(missing_ok=True)
         
         # Upload player images
         if player_images:
-            with st.spinner(f"📤 Uploading {len(player_images)} player images..."):
+            # with st.spinner(f"📤 Uploading {len(player_images)} player images..."):
                 for idx, img in enumerate(player_images):
                     if img:
                         # Save image to temporary file
@@ -168,7 +169,7 @@ def upload_files_to_s3(
         
         # Upload jersey images
         if jersey_images:
-            with st.spinner(f"📤 Uploading {len(jersey_images)} jersey images..."):
+            # with st.spinner(f"📤 Uploading {len(jersey_images)} jersey images..."):
                 for idx, img in enumerate(jersey_images):
                     if img:
                         # Save image to temporary file
@@ -214,8 +215,8 @@ def call_video_processing_api(
     """
     # Prepare headers
     headers = {}
-    if api_key:
-        headers["Authorization"] = f"Bearer {api_key}"
+    headers["Authorization"] = f"Bearer 2e16d307-9c70-4b50-8bc8-4a4953b585bb"
+        
     
     # Prepare form data with key-value pairs
     form_data = {
@@ -238,7 +239,7 @@ def call_video_processing_api(
             api_endpoint,
             data=form_data,  # Use 'data' instead of 'json'
             headers=headers,
-            timeout=300
+            timeout=480
         )
         response.raise_for_status()
         return {
@@ -365,10 +366,10 @@ if process_button and can_submit:
     # Initialize S3 manager
     try:
         with st.spinner("Connecting to S3..."):
-            print(os.getenv('AWS_ACCESS_KEY_ID'))
-            print(os.getenv('AWS_SECRET_ACCESS_KEY'))
-            print(os.getenv('AWS_REGION'))
-            print(os.getenv('S3_BUCKET_NAME'))
+            # print(os.getenv('AWS_ACCESS_KEY_ID'))
+            # print(os.getenv('AWS_SECRET_ACCESS_KEY'))
+            # print(os.getenv('AWS_REGION'))
+            # print(os.getenv('S3_BUCKET_NAME'))
             s3_manager = S3Manager(
                 aws_access_key_id=aws_access_key_id,
                 aws_secret_access_key=aws_secret_access_key,
@@ -377,13 +378,13 @@ if process_button and can_submit:
                 video_folder=video_folder,
                 image_folder=image_folder
             )
-        st.success("✓ Connected to storage successfully")
+        # st.success("✓ Connected to storage successfully")
     except Exception as e:
         st.error(f"❌ Failed to initialize S3 Manager: {str(e)}")
         st.stop()
     
     # Upload files to S3
-    st.markdown("### 📤 Uploading data...")
+    # st.markdown("### 📤 Uploading data...")
     url_expiration = url_expiration_days * 24 * 60 * 60  # Convert days to seconds
     
     upload_results = upload_files_to_s3(
@@ -403,7 +404,7 @@ if process_button and can_submit:
         st.stop()
     
     # Display upload summary
-    with st.expander("📋 Upload Summary", expanded=True):
+    with st.expander("📋 Upload Summary", expanded=False):
         st.json({
             'video_url': upload_results['video_url'],
             'player_images_count': len(upload_results['player_image_urls']),
@@ -428,7 +429,7 @@ if process_button and can_submit:
     
     if result["success"]:
         st.markdown('<div class="success-box">', unsafe_allow_html=True)
-        st.success("✅ Video processing completed successfully!")
+        # st.success("✅ Video processing completed successfully!")
         st.markdown('</div>', unsafe_allow_html=True)
         
         # Display results
@@ -459,22 +460,25 @@ if process_button and can_submit:
         #                 value=value
         #             )
         
-        # # Display full JSON response
-        # with st.expander("🔍 View Full API Response"):
-        #     st.json(data)
+        
     
     else:
-        st.markdown('<div class="error-box">', unsafe_allow_html=True)
-        st.error(f"❌ Player not found in Video OR Error processing video: {result['error']}")
-        st.markdown('</div>', unsafe_allow_html=True)
-        st.info(
-            "💡 **Troubleshooting Tips:**\n"
-            "- Check that the API endpoint URL is correct\n"
-            "- Verify that the API is running and accessible\n"
-            "- Ensure your API key is valid (if required)\n"
-            "- Check that the API can access S3 URLs\n"
-            "- Verify S3 bucket permissions allow API access"
-        )
+        # st.markdown('<div class="error-box">', unsafe_allow_html=True)
+        # st.error(f"❌ Error processing video: {result['error']}")
+        # st.markdown('</div>', unsafe_allow_html=True)
+        # st.info(
+        #     "💡 **Troubleshooting Tips:**\n"
+        #     "- Check that the API endpoint URL is correct\n"
+        #     "- Verify that the API is running and accessible\n"
+        #     "- Ensure your API key is valid (if required)\n"
+        #     "- Check that the API can access S3 URLs\n"
+        #     "- Verify S3 bucket permissions allow API access"
+        # )
+        pass
+
+    # Display full JSON response
+    st.code(json.dumps(result, indent=4), language='json')
+        
 
 # Footer
 st.markdown("---")
