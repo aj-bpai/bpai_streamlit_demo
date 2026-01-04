@@ -239,7 +239,7 @@ def call_video_processing_api(
             api_endpoint,
             data=form_data,  # Use 'data' instead of 'json'
             headers=headers,
-            timeout=480
+            timeout=1200
         )
         response.raise_for_status()
         return {
