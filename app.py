@@ -21,7 +21,7 @@ aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
 aws_region = os.getenv('AWS_REGION')
 s3_bucket_name = os.getenv('S3_BUCKET_NAME')
 
-api_url = 'https://8000-dep-01ke3cnrrcq3kfchs64h1gxvx8-d.cloudspaces.litng.ai/api/v1/predict'
+api_url = 'https://8000-dep-01ke5prbvcakb6hgj0s1nrpa2y-d.cloudspaces.litng.ai/api/v1/predict'
 api_key = None
 
 video_folder = 'input_videos'
@@ -239,7 +239,7 @@ def call_video_processing_api(
             api_endpoint,
             data=form_data,  # Use 'data' instead of 'json'
             headers=headers,
-            timeout=1200
+            timeout=600
         )
         response.raise_for_status()
         return {
@@ -438,11 +438,13 @@ if process_button and can_submit:
         data = result["data"]
         
         # Display output video
-        if "output_video_url" in data:
+        if "output_video_url" in data and data['output_video_url'] != '':
             st.markdown("### 🎥 Processed Video")
             output_video_url = data["output_video_url"]
             st.video(output_video_url)
             st.markdown(f"[⬇️ Download Processed Video]({output_video_url})")
+        else:
+            st.markdown("### 📈 Player not found in video...")
         
         # # Display metrics
         # st.markdown("### 📈 Metrics")
